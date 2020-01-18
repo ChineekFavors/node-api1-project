@@ -43,22 +43,35 @@ server.get('/api/users/:id', (req, res) => {
 
 //add new user to db
 server.post('/api/users', (req, res) => {
-    const newUser = req.body;
+    const {name, bio} = req.body;
 
-    db.insert(newUser)
-        .then(user => {
-            if(!newUser.name && !newUser.bio){
-                res.status(400).jsom({errorMessage: "Please provide name and bio for the user."}) 
+    if(!name || !bio){
+        return res.status(400).json({err: "Please provide name and bio for the user."})   
+    }
+    db.insert({name, bio})
+        .then(data => {
+            res.status(201).json(data)
+        })
+        .catch(err => {
+            res.status(500).json({errorMessage: "Please provide name and bio for the user."})
+        })
+
+    
+
+    // db.insert(newUser)
+    //     .then(user => {
+    //         if(!newUser.name || !newUser.bio){
+    //             res.status(400).jsom({errorMessage: "Please provide name and bio for the user."}) 
                 
                       
-            } else {
-                res.status(201).json({success: "created", newUser})
+    //         } else {
+    //             res.status(201).json(user)
                  
-            }    
-        })
-        .catch( err => {
-            res.status(500).jsom({errorMessage: "There was an error while saving the user to the database"})
-        });
+    //         }    
+    //     })
+    //     .catch( err => {
+    //         res.status(500).jsom({message: "There was an error while saving the user to the database",err })
+    //     });
 });
 
 //delete user from db
